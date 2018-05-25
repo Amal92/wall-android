@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 
 public class Wall {
     public static void with(Activity activity){
-        Log.d("Amal", "App version: " + getBuildConfigValue(activity,"versionName"));
+        Log.d("Amal", "App version: " + getBuildConfigValue(activity,"VERSION_NAME"));
         Log.d("Amal", "Android version: " + Build.VERSION.RELEASE);
         Log.d("Amal", "Brand: " + Build.BRAND);
         Log.d("Amal", "Hardware: " + Build.HARDWARE);
