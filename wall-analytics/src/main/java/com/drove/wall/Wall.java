@@ -5,6 +5,13 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.HttpSenderConfigurationBuilder;
+import org.acra.data.StringFormat;
+
 import java.lang.reflect.Field;
 
 /**
@@ -52,7 +59,7 @@ public class Wall {
 
     private void setUpAndInstallCrashLogging(Application application) {
 
-      /*  CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application);
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application);
         builder.setBuildConfigClass(getBuildClass(application)).setReportFormat(StringFormat.JSON);
         builder.setReportContent(ReportField.APP_VERSION_CODE,
                 ReportField.APP_VERSION_NAME,
@@ -66,15 +73,13 @@ public class Wall {
                 ReportField.USER_CRASH_DATE,
                 ReportField.AVAILABLE_MEM_SIZE,
                 ReportField.TOTAL_MEM_SIZE);
-        builder.setReportField(ReportField.CUSTOM_DATA,true);
+        builder.setReportField(ReportField.CUSTOM_DATA, true);
 
 
-
-        builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class).setEnabled(true)
-                .setMailTo("amalpaul0492@gmail.com").setSubject("CrashReport");
+        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class).setEnabled(true);
 
 
-        ACRA.init(application,builder);*/
+        ACRA.init(application, builder);
     }
 
 }
