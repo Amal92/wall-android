@@ -11,6 +11,7 @@ import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.HttpSenderConfigurationBuilder;
 import org.acra.data.StringFormat;
+import org.acra.sender.HttpSender;
 
 import java.lang.reflect.Field;
 
@@ -20,7 +21,7 @@ import java.lang.reflect.Field;
 
 public class Wall {
 
-    final static String TAG = "wall/class";
+    final static String TAG = "wall";
 
     public static void with(Application application) {
         Log.d(TAG, "App version: " + getBuildConfigValue(application.getApplicationContext(), "VERSION_NAME"));
@@ -29,6 +30,7 @@ public class Wall {
         Log.d(TAG, "Hardware: " + Build.HARDWARE);
         Log.d(TAG, "Manufacture: " + Build.MANUFACTURER);
         Log.d(TAG, "Model: " + Build.MODEL);
+        setUpAndInstallCrashLogging(application);
     }
 
     private static Object getBuildConfigValue(Context context, String fieldName) {
@@ -57,10 +59,11 @@ public class Wall {
         return null;
     }
 
-    private void setUpAndInstallCrashLogging(Application application) {
+    private static void setUpAndInstallCrashLogging(Application application) {
 
         CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application);
         builder.setBuildConfigClass(getBuildClass(application)).setReportFormat(StringFormat.JSON);
+
         builder.setReportContent(ReportField.APP_VERSION_CODE,
                 ReportField.APP_VERSION_NAME,
                 ReportField.ANDROID_VERSION,
@@ -76,7 +79,8 @@ public class Wall {
         builder.setReportField(ReportField.CUSTOM_DATA, true);
 
 
-        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class).setEnabled(true);
+        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class).setEnabled(true)
+                .setHttpMethod(HttpSender.Method.POST).setUri("http://139.59.10.55/api/check");
 
 
         ACRA.init(application, builder);
