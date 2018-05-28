@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.drove.wall.Utils.NoAcraLog;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
@@ -83,7 +85,8 @@ public class Wall {
 
 
         ACRA.init(application, builder);
-        ACRA.DEV_LOGGING = false;
+        ACRA.setLog(new NoAcraLog());
+
     }
 
 }
