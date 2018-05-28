@@ -47,7 +47,7 @@ public class Wall {
         json.addProperty("model", getPhoneModel());
         json.addProperty("app_user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
 
-        Log.d("amal","log data: " + json.toString());
+        Log.d("amal", "log data: " + json.toString());
         Ion.with(application.getApplicationContext())
                 .load(Endpoints.INIT_URL)
                 .setJsonObjectBody(json)
@@ -138,7 +138,6 @@ public class Wall {
                 ReportField.AVAILABLE_MEM_SIZE,
                 ReportField.TOTAL_MEM_SIZE);
         builder.setReportField(ReportField.CUSTOM_DATA, true);
-        builder.setAdditionalSharedPreferences(SharedPreferencesUtils.getFileName());
 
 
         builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class).setEnabled(true)
@@ -147,6 +146,7 @@ public class Wall {
 
         ACRA.init(application, builder);
         ACRA.setLog(new NoAcraLog());
+        ACRA.getErrorReporter().putCustomData("user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
 
     }
 
