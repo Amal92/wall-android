@@ -3,6 +3,7 @@ package com.drove.wall;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import com.drove.wall.Utils.Endpoints;
 import com.drove.wall.Utils.NoAcraLog;
@@ -46,7 +47,7 @@ public class Wall {
         json.addProperty("model", getPhoneModel());
         json.addProperty("app_user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
 
-
+        Log.d("amal","log data: " + json.toString());
         Ion.with(application.getApplicationContext())
                 .load(Endpoints.INIT_URL)
                 .setJsonObjectBody(json)
