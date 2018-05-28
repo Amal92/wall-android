@@ -3,7 +3,6 @@ package com.drove.wall;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 
 import com.drove.wall.Utils.Endpoints;
 import com.drove.wall.Utils.NoAcraLog;
@@ -61,7 +60,7 @@ public class Wall {
                         try {
                             JSONObject jsonObject = new JSONObject(result.getResult());
                             String appId = jsonObject.optString("app_user_id");
-                            Log.d("amal", "app id:  " + appId);
+                            SharedPreferencesUtils.setParam(application, SharedPreferencesUtils.USER_ID, appId);
                         } catch (JSONException e1) {
                             e1.printStackTrace();
                         }
