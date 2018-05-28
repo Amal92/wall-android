@@ -95,5 +95,8 @@ public class SharedPreferencesUtils {
         return sp.getBoolean("isShortCut", false);
     }
 
+    public static String getFileName(){
+        return FILE_NAME;
+    }
 
 }

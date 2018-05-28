@@ -138,6 +138,7 @@ public class Wall {
                 ReportField.AVAILABLE_MEM_SIZE,
                 ReportField.TOTAL_MEM_SIZE);
         builder.setReportField(ReportField.CUSTOM_DATA, true);
+        builder.setAdditionalSharedPreferences(SharedPreferencesUtils.getFileName());
 
 
         builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class).setEnabled(true)
