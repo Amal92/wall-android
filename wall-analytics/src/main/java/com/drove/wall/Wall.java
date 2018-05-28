@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.drove.wall.Utils.Endpoints;
 import com.drove.wall.Utils.NoAcraLog;
 import com.drove.wall.Utils.SharedPreferencesUtils;
 import com.google.gson.JsonObject;
@@ -48,7 +49,7 @@ public class Wall {
 
 
         Ion.with(application.getApplicationContext())
-                .load("http://example.com/post")
+                .load(Endpoints.INIT_URL)
                 .setJsonObjectBody(json)
                 .asString()
                 .withResponse()
