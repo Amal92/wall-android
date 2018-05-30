@@ -1,10 +1,13 @@
 package com.drove.wall;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.drove.wall.Utils.AppForegroundStateManager;
 import com.drove.wall.Utils.Endpoints;
 import com.drove.wall.Utils.NoAcraLog;
 import com.drove.wall.Utils.SharedPreferencesUtils;
@@ -33,6 +36,8 @@ public class Wall {
     public static void with(Application application, String apiKey) {
         setUpAnalytics(application, apiKey);
         setUpAndInstallCrashLogging(application, apiKey);
+        application.registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks(application));
+        AppForegroundStateManager.getInstance().addListener(new MyActivityStateChangeListener(application, apiKey));
     }
 
     private static void setUpAnalytics(Application application, String apiKey) {
@@ -62,6 +67,7 @@ public class Wall {
                             JSONObject jsonObject = new JSONObject(result.getResult());
                             String appId = jsonObject.optString("app_user_id");
                             SharedPreferencesUtils.setParam(application, SharedPreferencesUtils.USER_ID, appId);
+                            ACRA.getErrorReporter().putCustomData("user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
                         } catch (JSONException e1) {
                             e1.printStackTrace();
                         }
@@ -147,7 +153,80 @@ public class Wall {
         ACRA.init(application, builder);
         ACRA.setLog(new NoAcraLog());
         ACRA.getErrorReporter().putCustomData("user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
+        ACRA.getErrorReporter().putCustomData("app_key", apiKey);
 
+    }
+
+    public static class MyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+
+        private Context activity;
+
+        public MyActivityLifecycleCallbacks(Context activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            Log.d("amal", "created");
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            Log.d("amal", "start");
+            AppForegroundStateManager.getInstance().onActivityVisible(activity);
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            Log.d("amal", "resume");
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+            Log.d("amal", "pause");
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            Log.d("amal", "stop");
+            AppForegroundStateManager.getInstance().onActivityNotVisible(activity);
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+            Log.d("amal", "destroy");
+            activity.getApplication().unregisterActivityLifecycleCallbacks(this);
+        }
+    }
+
+    public static class MyActivityStateChangeListener implements AppForegroundStateManager.OnAppForegroundStateChangeListener {
+
+        private Application application;
+        private String apiKey;
+
+        public MyActivityStateChangeListener(Application application, String apiKey) {
+            this.application = application;
+            this.apiKey = apiKey;
+        }
+
+        @Override
+        public void onAppForegroundStateChange(AppForegroundStateManager.AppForegroundState newState) {
+            if (AppForegroundStateManager.AppForegroundState.IN_FOREGROUND == newState) {
+                // App just entered the foreground. Do something here!
+                Log.d("Amal", "foreground");
+              //  setUpAnalytics(application, apiKey);
+            } else {
+                // App just entered the background. Do something here!
+                Log.d("Amal", "background");
+                setUpAnalytics(application, apiKey);
+                AppForegroundStateManager.getInstance().removeListener(this);
+            }
+        }
     }
 
 }
