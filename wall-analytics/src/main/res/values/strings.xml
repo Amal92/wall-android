@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">wall</string>
+    <string name="gcm_sender_id">1010438673014</string>
 </resources>

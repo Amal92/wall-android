@@ -11,6 +11,7 @@ import com.drove.wall.Utils.AppForegroundStateManager;
 import com.drove.wall.Utils.Endpoints;
 import com.drove.wall.Utils.NoAcraLog;
 import com.drove.wall.Utils.SharedPreferencesUtils;
+import com.drove.wall.gcm.GcmRegistration;
 import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 
@@ -34,7 +35,7 @@ public class Wall {
     final static String TAG = "wall";
 
     public static void with(Application application, String apiKey) {
-        setUpAnalytics(application, apiKey);
+        // setUpAnalytics(application, apiKey);
         setUpAndInstallCrashLogging(application, apiKey);
         application.registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks(application));
         AppForegroundStateManager.getInstance().addListener(new MyActivityStateChangeListener(application, apiKey));
@@ -52,7 +53,6 @@ public class Wall {
         json.addProperty("model", getPhoneModel());
         json.addProperty("app_user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
 
-        Log.d("amal", "log data: " + json.toString());
         Ion.with(application.getApplicationContext())
                 .load(Endpoints.INIT_URL)
                 .setJsonObjectBody(json)
@@ -65,8 +65,12 @@ public class Wall {
                     if (result.getHeaders().code() == 200) {
                         try {
                             JSONObject jsonObject = new JSONObject(result.getResult());
+                            Log.d("Amal", result.getResult());
                             String appId = jsonObject.optString("app_user_id");
                             SharedPreferencesUtils.setParam(application, SharedPreferencesUtils.USER_ID, appId);
+                            String session_id = jsonObject.optString("session_id");
+                            SharedPreferencesUtils.setParam(application, SharedPreferencesUtils.SESSION_ID, session_id);
+                            GcmRegistration.getInstance(application).getAndSendGcmRegId();
                             ACRA.getErrorReporter().putCustomData("user_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.USER_ID, ""));
                         } catch (JSONException e1) {
                             e1.printStackTrace();
@@ -157,6 +161,26 @@ public class Wall {
 
     }
 
+    private static void sendEndSession(Application application, String apiKey) {
+        JsonObject json = new JsonObject();
+        // json.addProperty("app_key", apiKey);
+        json.addProperty("session_id", (String) SharedPreferencesUtils.getParam(application, SharedPreferencesUtils.SESSION_ID, ""));
+
+        Ion.with(application.getApplicationContext())
+                .load(Endpoints.SESSION_END_URL)
+                .setJsonObjectBody(json)
+                .asString()
+                .withResponse()
+                .setCallback((e, result) -> {
+                    // do stuff with the result or error
+                    if (result == null)
+                        return;
+                    if (result.getHeaders().code() == 200) {
+
+                    }
+                });
+    }
+
     public static class MyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
         private Context activity;
@@ -219,14 +243,16 @@ public class Wall {
             if (AppForegroundStateManager.AppForegroundState.IN_FOREGROUND == newState) {
                 // App just entered the foreground. Do something here!
                 Log.d("Amal", "foreground");
-              //  setUpAnalytics(application, apiKey);
+                setUpAnalytics(application, apiKey);
             } else {
                 // App just entered the background. Do something here!
                 Log.d("Amal", "background");
-                setUpAnalytics(application, apiKey);
+                sendEndSession(application, apiKey);
                 AppForegroundStateManager.getInstance().removeListener(this);
             }
         }
+
+
     }
 
 }

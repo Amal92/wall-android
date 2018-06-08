@@ -1,2 +1,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.drove.wall" />
+    package="com.drove.wall">
+
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="com.drove.wall.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.drove.wall.permission.C2D_MESSAGE" />
+
+    <application android:label="@string/app_name">
+        <service
+            android:name=".gcm.GcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.drove.wall" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+
+</manifest>

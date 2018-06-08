@@ -11,6 +11,8 @@ public class SharedPreferencesUtils {
 
     public static final String EMAIL_ID = "com.drove.wall.SESSION_TOKEN";
     public static final String USER_ID = "com.drove.wall.USER_ID";
+    public static final String SESSION_ID = "com.drove.wall.SESSION_ID";
+    public static final String GCM_REG_ID = "com.drove.wall.GCM_REG_ID";
 
     /**
      * @param context
